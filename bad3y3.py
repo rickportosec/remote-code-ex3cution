@@ -1,4 +1,4 @@
-import http.server, socketserver, signal
+import http.server, socketserver, signal, base64
 
 ADDRESS = "0.0.0.0"
 PORT = 8000

